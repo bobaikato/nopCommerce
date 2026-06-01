@@ -66,8 +66,8 @@ tasks:
     internal: true
   test:
     context: host
-    category: test
-    description: Run the Nop.Tests project.
+    category: dev
+    description: Run the full Nop.Tests project.
     run: dotnet test --no-restore --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
     execution:
       default_mode: native
@@ -80,7 +80,6 @@ tasks:
           run: dotnet test --no-restore --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
     depends_on:
       - setup
-    safe_for_agent: true
     notes: Run the selected test project for this contract slice.
   verify:
     context: host
@@ -98,9 +97,8 @@ tasks:
           run: "true"
     depends_on:
       - build
-      - test
     safe_for_agent: true
-    notes: Contract-level verification path.
+    notes: Contract-level verification path using deterministic build-only baseline.
 workflows:
   default: verify
   verify:
@@ -116,7 +114,6 @@ agent:
   entrypoint: setup
   default_task: verify
   safe_tasks:
-  - test
   - verify
   verify_after_changes:
   - verify

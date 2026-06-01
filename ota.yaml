@@ -14,12 +14,12 @@ execution:
       backend: container
       lifecycle: ephemeral
       container:
-        image: mcr.microsoft.com/dotnet/sdk:9.0
+        image: mcr.microsoft.com/dotnet/sdk:10.0
         engines:
           - docker
           - podman
 runtimes:
-  dotnet: '9.0'
+  dotnet: '10.0'
 tools:
   dotnet: '*'
 checks:

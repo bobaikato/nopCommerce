@@ -49,16 +49,16 @@ tasks:
     context: host
     category: setup
     description: Restore dependencies for the Nop.Tests project.
-    run: dotnet restore src/Tests/Nop.Tests/Nop.Tests.csproj
+    run: dotnet restore --disable-parallel src/Tests/Nop.Tests/Nop.Tests.csproj
     execution:
       default_mode: native
       modes:
         native:
           context: host
-          run: dotnet restore src/Tests/Nop.Tests/Nop.Tests.csproj
+          run: dotnet restore --disable-parallel src/Tests/Nop.Tests/Nop.Tests.csproj
         container:
           context: app
-          run: dotnet restore src/Tests/Nop.Tests/Nop.Tests.csproj
+          run: dotnet restore --disable-parallel src/Tests/Nop.Tests/Nop.Tests.csproj
     effects:
       network: true
       network_kind: dependency_hydration
@@ -68,16 +68,16 @@ tasks:
     context: host
     category: test
     description: Run the Nop.Tests project.
-    run: dotnet test --no-build --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
+    run: dotnet test --no-restore --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
     execution:
       default_mode: native
       modes:
         native:
           context: host
-          run: dotnet test --no-build --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
+          run: dotnet test --no-restore --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
         container:
           context: app
-          run: dotnet test --no-build --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
+          run: dotnet test --no-restore --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
     depends_on:
       - setup
     safe_for_agent: true

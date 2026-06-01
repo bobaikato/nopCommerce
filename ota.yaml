@@ -4,7 +4,7 @@ metadata:
     minimum_version: "1.6.18"
 project:
   name: nopCommerce
-  description: nopCommerce readiness slice covering .NET restore, build, and test from root solution
+  description: nopCommerce readiness slice covering .NET restore, build, and test for Nop.Tests project
 execution:
   default_context: host
   contexts:
@@ -31,57 +31,57 @@ tasks:
   build:
     context: host
     category: build
-    description: Build the default .NET solution or project.
-    run: dotnet build
+    description: Build the Nop.Tests project.
+    run: dotnet build --no-restore src/Tests/Nop.Tests/Nop.Tests.csproj
     execution:
       default_mode: native
       modes:
         native:
           context: host
-          run: dotnet build
+          run: dotnet build --no-restore src/Tests/Nop.Tests/Nop.Tests.csproj
         container:
           context: app
-          run: dotnet build
+          run: dotnet build --no-restore src/Tests/Nop.Tests/Nop.Tests.csproj
     depends_on:
       - setup
-    notes: Build the default solution from repository root.
+    notes: Build the selected test project for this contract slice.
   setup:
     context: host
     category: setup
-    description: Restore the default .NET dependencies.
-    run: dotnet restore
+    description: Restore dependencies for the Nop.Tests project.
+    run: dotnet restore src/Tests/Nop.Tests/Nop.Tests.csproj
     execution:
       default_mode: native
       modes:
         native:
           context: host
-          run: dotnet restore
+          run: dotnet restore src/Tests/Nop.Tests/Nop.Tests.csproj
         container:
           context: app
-          run: dotnet restore
+          run: dotnet restore src/Tests/Nop.Tests/Nop.Tests.csproj
     effects:
       network: true
       network_kind: dependency_hydration
-    notes: Restore .NET dependencies.
+    notes: Restore dependencies for the selected test project.
     internal: true
   test:
     context: host
     category: test
-    description: Run the default .NET test suite.
-    run: dotnet test
+    description: Run the Nop.Tests project.
+    run: dotnet test --no-build --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
     execution:
       default_mode: native
       modes:
         native:
           context: host
-          run: dotnet test
+          run: dotnet test --no-build --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
         container:
           context: app
-          run: dotnet test
+          run: dotnet test --no-build --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
     depends_on:
       - setup
     safe_for_agent: true
-    notes: Run .NET tests from repository root.
+    notes: Run the selected test project for this contract slice.
   verify:
     context: host
     category: test

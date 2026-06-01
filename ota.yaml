@@ -32,16 +32,16 @@ tasks:
     context: host
     category: build
     description: Build the Nop.Tests project.
-    run: dotnet build --no-restore src/Tests/Nop.Tests/Nop.Tests.csproj
+    run: dotnet build src/Tests/Nop.Tests/Nop.Tests.csproj
     execution:
       default_mode: native
       modes:
         native:
           context: host
-          run: dotnet build --no-restore src/Tests/Nop.Tests/Nop.Tests.csproj
+          run: dotnet build src/Tests/Nop.Tests/Nop.Tests.csproj
         container:
           context: app
-          run: dotnet build --no-restore src/Tests/Nop.Tests/Nop.Tests.csproj
+          run: dotnet build src/Tests/Nop.Tests/Nop.Tests.csproj
     depends_on:
       - setup
     notes: Build the selected test project for this contract slice.

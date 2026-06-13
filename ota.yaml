@@ -2,6 +2,9 @@ version: 1
 metadata:
   ota:
     minimum_version: "1.6.18"
+# Pressure-test note (local branch):
+# - Remove the `toolchains.dotnet` migration before an upstream PR if the target PR must remain on
+#   an older Ota release that does not ship the same dotnet toolchain behavior.
 project:
   name: nopCommerce
   description: nopCommerce readiness slice covering .NET restore, build, and test for Nop.Tests project
@@ -18,15 +21,10 @@ execution:
         engines:
           - docker
           - podman
-runtimes:
-  dotnet: '10.0'
-tools:
-  dotnet: '*'
-checks:
-- name: dotnet-installed
-  kind: precondition
-  severity: error
-  run: dotnet --version
+toolchains:
+  dotnet:
+    provider: dotnet
+    version: '10.0'
 tasks:
   build:
     context: host
@@ -44,6 +42,9 @@ tasks:
           run: dotnet build src/Tests/Nop.Tests/Nop.Tests.csproj
     depends_on:
       - setup
+    requirements:
+      toolchains:
+        - dotnet
     notes: Build the selected test project for this contract slice.
   setup:
     context: host
@@ -59,6 +60,9 @@ tasks:
         container:
           context: app
           run: dotnet restore --disable-parallel src/Tests/Nop.Tests/Nop.Tests.csproj
+    requirements:
+      toolchains:
+        - dotnet
     effects:
       network: true
       network_kind: dependency_hydration
@@ -80,6 +84,9 @@ tasks:
           run: dotnet test --no-restore --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
     depends_on:
       - setup
+    requirements:
+      toolchains:
+        - dotnet
     notes: Run the selected test project for this contract slice.
   verify:
     context: host
@@ -97,6 +104,9 @@ tasks:
           run: "true"
     depends_on:
       - build
+    requirements:
+      toolchains:
+        - dotnet
     safe_for_agent: true
     notes: Contract-level verification path using deterministic build-only baseline.
 workflows:
@@ -139,8 +149,8 @@ agent:
   bootstrap:
     ota:
       note: Only install ota if it is missing and installation is approved.
-      sh: curl -fsSL https://dist.ota.run/install.sh | OTA_VERSION=v1.6.18 sh
-      powershell: $env:OTA_VERSION='v1.6.18'; irm https://dist.ota.run/install.ps1 | iex
+      sh: curl -fsSL https://dist.ota.run/install.sh | OTA_VERSION=v1.6.20 sh
+      powershell: $env:OTA_VERSION='v1.6.20'; irm https://dist.ota.run/install.ps1 | iex
   notes: |
     Use `ota workflows` to inspect declared workflow paths.
     Use `ota up --workflow verify` when you want setup and verification through one declared path.

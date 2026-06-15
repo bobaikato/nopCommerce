@@ -89,24 +89,11 @@ tasks:
         - dotnet
     notes: Run the selected test project for this contract slice.
   verify:
-    context: host
     category: test
     description: Aggregate baseline nopCommerce verification checks.
-    run: "true"
-    execution:
-      default_mode: native
-      modes:
-        native:
-          context: host
-          run: "true"
-        container:
-          context: app
-          run: "true"
-    depends_on:
-      - build
-    requirements:
-      toolchains:
-        - dotnet
+    aggregate:
+      tasks:
+        - build
     safe_for_agent: true
     notes: Contract-level verification path using deterministic build-only baseline.
 workflows:

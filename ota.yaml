@@ -23,8 +23,10 @@ execution:
           - podman
 toolchains:
   dotnet:
-    provider: dotnet
     version: '10.0'
+    fulfillment:
+      source: dotnet
+      mode: run
 tasks:
   build:
     context: host

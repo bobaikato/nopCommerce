@@ -1,10 +1,7 @@
 version: 1
 metadata:
   ota:
-    minimum_version: "1.6.18"
-# Pressure-test note (local branch):
-# - Remove the `toolchains.dotnet` migration before an upstream PR if the target PR must remain on
-#   an older Ota release that does not ship the same dotnet toolchain behavior.
+    minimum_version: "1.6.25"
 project:
   name: nopCommerce
   description: nopCommerce readiness slice covering .NET restore, build, and test for Nop.Tests project
@@ -32,58 +29,99 @@ tasks:
     context: host
     category: build
     description: Build the Nop.Tests project.
-    run: dotnet build src/Tests/Nop.Tests/Nop.Tests.csproj
+    command:
+      exe: dotnet
+      args:
+        - build
+        - --no-restore
+        - src/Tests/Nop.Tests/Nop.Tests.csproj
     execution:
       default_mode: native
       modes:
         native:
           context: host
-          run: dotnet build src/Tests/Nop.Tests/Nop.Tests.csproj
+          command:
+            exe: dotnet
+            args:
+              - build
+              - --no-restore
+              - src/Tests/Nop.Tests/Nop.Tests.csproj
         container:
           context: app
-          run: dotnet build src/Tests/Nop.Tests/Nop.Tests.csproj
+          command:
+            exe: dotnet
+            args:
+              - build
+              - --no-restore
+              - src/Tests/Nop.Tests/Nop.Tests.csproj
     depends_on:
       - setup
     requirements:
       toolchains:
         - dotnet
+    safe_for_agent: true
     notes: Build the selected test project for this contract slice.
   setup:
     context: host
     category: setup
     description: Restore dependencies for the Nop.Tests project.
-    run: dotnet restore --disable-parallel src/Tests/Nop.Tests/Nop.Tests.csproj
+    prepare:
+      kind: dependency_hydration
+      medium: package_dependencies
+      source:
+        kind: dotnet_restore
+        cwd: src/Tests/Nop.Tests
     execution:
       default_mode: native
       modes:
         native:
           context: host
-          run: dotnet restore --disable-parallel src/Tests/Nop.Tests/Nop.Tests.csproj
         container:
           context: app
-          run: dotnet restore --disable-parallel src/Tests/Nop.Tests/Nop.Tests.csproj
     requirements:
       toolchains:
         - dotnet
     effects:
       network: true
       network_kind: dependency_hydration
+    safe_for_agent: true
     notes: Restore dependencies for the selected test project.
     internal: true
   test:
     context: host
     category: dev
     description: Run the full Nop.Tests project.
-    run: dotnet test --no-restore --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
+    command:
+      exe: dotnet
+      args:
+        - test
+        - --no-restore
+        - --verbosity
+        - minimal
+        - src/Tests/Nop.Tests/Nop.Tests.csproj
     execution:
       default_mode: native
       modes:
         native:
           context: host
-          run: dotnet test --no-restore --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
+          command:
+            exe: dotnet
+            args:
+              - test
+              - --no-restore
+              - --verbosity
+              - minimal
+              - src/Tests/Nop.Tests/Nop.Tests.csproj
         container:
           context: app
-          run: dotnet test --no-restore --verbosity minimal src/Tests/Nop.Tests/Nop.Tests.csproj
+          command:
+            exe: dotnet
+            args:
+              - test
+              - --no-restore
+              - --verbosity
+              - minimal
+              - src/Tests/Nop.Tests/Nop.Tests.csproj
     depends_on:
       - setup
     requirements:
@@ -137,9 +175,9 @@ agent:
       - init:contract_file_default
   bootstrap:
     ota:
-      note: Only install ota if it is missing and installation is approved.
-      sh: curl -fsSL https://dist.ota.run/install.sh | OTA_GIT_REV=08c270351c9870c82a39899161388bb250ad23c4 sh -s -- --from-git
-      powershell: $env:OTA_GIT_REV='08c270351c9870c82a39899161388bb250ad23c4'; & ([scriptblock]::Create((irm https://dist.ota.run/install.ps1))) -FromGit
+      source:
+        kind: branch
+        branch: 1.6.25-implementation
   notes: |
     Use `ota workflows` to inspect declared workflow paths.
     Use `ota up --workflow verify` when you want setup and verification through one declared path.

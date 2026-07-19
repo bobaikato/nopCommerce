@@ -208,5 +208,6 @@ src/Tests/Nop.Tests/Connections.resx
 
 # Ota local runtime artifacts
 .ota/state/*
+.ota/contracts/*
 .ota/receipts/*
 .ota/proof/*

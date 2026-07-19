@@ -2,15 +2,6 @@ name: "Test: Ota contract matrix"
 
 on:
   workflow_dispatch:
-    inputs:
-      ota_repository:
-        description: Ota source repository to build for this matrix run
-        required: false
-        default: ota-run/ota
-      ota_ref:
-        description: Ota branch, tag, or commit to build for this matrix run
-        required: false
-        default: v1.6.18
   pull_request:
     paths:
       - "ota.yaml"
@@ -84,11 +75,10 @@ jobs:
         with:
           ruby-version: "3.3"
 
-      - name: Install ota from source
-        uses: ota-run/ota/.github/actions/install-ota-from-source@v1.6.18
+      - name: Install Ota from the contract
+        uses: ota-run/setup@493cba84bf7f7c11c9e8e996d832d93a89c62184
         with:
-          repository: ${{ github.event.inputs.ota_repository || 'ota-run/ota' }}
-          ref: ${{ github.event.inputs.ota_ref || 'v1.6.18' }}
+          source: contract
 
       - name: Validate contract
         shell: bash

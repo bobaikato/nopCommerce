@@ -1,0 +1,46 @@
+# ota:managed-github-projection v1 identity=sha256:47e4cd746360763cecad72ff2b5ce537c4f6388ff0adfc7f3106c79e01d4d011
+name: Ota governance ('verify')
+
+on:
+  workflow_call:
+    inputs:
+      ota_projection_identity:
+        description: Ota-managed projection identity
+        required: true
+        type: string
+      ota_runner:
+        description: GitHub runner selected by the human-owned caller
+        required: false
+        default: 'ubuntu-latest'
+        type: string
+      ota_target_os:
+        description: Target operating system bound into the Ota projection
+        required: true
+        type: string
+
+jobs:
+  ota_ota_verify_verify:
+    name: 'ota.verify.verify (linux/native)'
+    runs-on: ${{ inputs.ota_runner }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: ota-run/setup@493cba84bf7f7c11c9e8e996d832d93a89c62184
+        with:
+          source: contract
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1
+        with:
+          dotnet-version: '10.0'
+      - name: Verify Ota projection identity
+        run: ota ci projection --workflow 'verify' --mode native --target-os ${{ inputs.ota_target_os }} --expect-identity ${{ inputs.ota_projection_identity }} --json
+      - name: Validate contract
+        run: ota validate . --json
+      - name: Diagnose contract lane
+        run: ota doctor --workflow 'verify' --mode native --json
+      - name: Discover safe execution surface
+        run: ota tasks --safe --use --json
+      - name: Preview contract lane
+        run: ota up --workflow 'verify' --mode native --agent --dry-run --json
+      - name: Run contract lane
+        run: ota up --workflow 'verify' --mode native --agent --json
+      - name: Archive contract receipt
+        run: ota receipt --workflow 'verify' --mode native --archive --json

@@ -1,0 +1,29 @@
+# Copyright (C) 2026 Ota
+# Licensed under the Apache License, Version 2.0.
+
+name: Ota governance
+
+on:
+  push:
+    branches:
+      - bobai/nopCommerce-ota-pressure
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-native-linux:
+    uses: ./.github/workflows/ota-verify-native-linux.yml
+    with:
+      ota_projection_identity: sha256:47e4cd746360763cecad72ff2b5ce537c4f6388ff0adfc7f3106c79e01d4d011
+      ota_target_os: linux
+      ota_runner: ubuntu-latest
+
+  verify-container-linux:
+    uses: ./.github/workflows/ota-verify-container-linux.yml
+    with:
+      ota_projection_identity: sha256:9001caef331bbd9a0a2a81f74d740ada635e157d6493429a80a9fcde4502632f
+      ota_target_os: linux
+      ota_runner: ubuntu-latest

@@ -176,8 +176,8 @@ agent:
   bootstrap:
     ota:
       source:
-        kind: branch
-        branch: 1.6.25-implementation
+        kind: version
+        version: v1.6.25
   notes: |
     Use `ota workflows` to inspect declared workflow paths.
     Use `ota up --workflow verify` when you want setup and verification through one declared path.
